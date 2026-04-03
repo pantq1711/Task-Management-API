@@ -1,0 +1,12 @@
+package com.example.taskmanagement.repository;
+
+import com.example.taskmanagement.entity.Board;
+import com.example.taskmanagement.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface BoardRepository extends JpaRepository<Board, Long> {
+
+    Page<Board> findAllByUser(User user, Pageable pageable);
+}
