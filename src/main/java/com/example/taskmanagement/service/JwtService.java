@@ -25,7 +25,7 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String genarateToken(String email){
+    public String generateToken(String email){
         return Jwts.builder()
                 .setSubject(email)
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
