@@ -10,12 +10,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException exception, WebRequest request){
+        exception.printStackTrace();
         ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception exception,  WebRequest request){
+        exception.printStackTrace();
         ErrorResponse errorResponse = new ErrorResponse("An unexpected error occurred. Please try again later.", request.getDescription(false));
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

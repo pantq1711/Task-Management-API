@@ -7,9 +7,6 @@ spring:
     url: jdbc:mysql://localhost:3306/task_management?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
     username: root
     password: 123456
-  jwt:
-    secret-key: "Thay_Bang_Mot_Chuoi_That_Dai_Tren_32_Ky_Tu_Nhe_An"
-    expiration: 86400000 # 24 gio tinh bang miliseconds
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,6 +14,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+jwt:
+  secret: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
+  expiration: 86400000 # 24 gio tinh bang miliseconds
 server:
   port: 8080

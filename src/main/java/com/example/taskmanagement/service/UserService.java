@@ -25,15 +25,14 @@ public class UserService {
 
     public UserDTO register(RegisterRequest registerRequest){
         //check trong DB xem co username chua
-        if(!userRepository.existsByUsername(registerRequest.getUsername())){
-            throw new RuntimeException("Username existed !");
+        if(userRepository.existsByUsername(registerRequest.getUsername())){
+            throw new RuntimeException("Username existed! Please user another username");
         }
-        //hash password
-        passwordEncoder.encode(registerRequest.getPassword());
         // tao user voi username, password
         User user = new User();
+        user.setRole(User.Role.USER);
         user.setName(registerRequest.getName());
-        user.setPassword(registerRequest.getPassword());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setUsername(registerRequest.getUsername());
         //luu user vao DB
         userRepository.save(user);
@@ -50,9 +49,11 @@ public class UserService {
         //Tao token
         String accessToken = jwtService.generateToken(user.getUsername());
         //Tra ve AuthResponse
-        AuthResponseDTO authResponseDTO = new AuthResponseDTO();
-        authResponseDTO.setAccessToken(accessToken);
-        return authResponseDTO;
+        return AuthResponseDTO.builder()
+                .accessToken(accessToken)
+                .username(user.getUsername())
+                .refreshToken(null)
+                .build();
     }
 
     private UserDTO convertToDTO(User user){
