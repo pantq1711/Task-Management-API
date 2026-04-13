@@ -6,13 +6,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JwtService {
@@ -38,6 +39,9 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+//        log.info("Subject: {}", claims.getSubject());
+//        log.info("Expiration: {}", claims.getExpiration());
+//        log.info("Token: {}", token);
         return function.apply(claims);
     }
 
@@ -58,5 +62,3 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
-
-

@@ -34,8 +34,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService); // load user từ DB
-        provider.setPasswordEncoder(passwordEncoder());     // verify password bằng BCrypt
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
@@ -49,23 +49,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-
-                // STATELESS: không dùng session — mỗi request phải tự mang token
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)// 403
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
                 .authorizeHttpRequests(auth -> auth
-                        // Các endpoint public — không cần token
                         .requestMatchers("/api/auth/**").permitAll()
-                        // Tất cả endpoint còn lại — phải có token hợp lệ
                         .anyRequest().authenticated()
                 )
-
                 .authenticationProvider(authenticationProvider())
-
-                // Đặt JwtAuthFilter TRƯỚC UsernamePasswordAuthenticationFilter
-                // Vì ta muốn verify JWT trước khi Spring Security chạy filter mặc định
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

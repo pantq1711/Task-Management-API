@@ -19,22 +19,21 @@ import org.springframework.stereotype.Service;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-
     private final SecurityUtils securityUtils;
 
     public Page<BoardDTO> getAllBoard(Pageable pageable){
-        return boardRepository.findAll(pageable)
-                .map(this::convertToDTO);
+        return boardRepository.findAll(pageable).map(this::convertToDTO);
     }
 
     public Page<BoardDTO> getBoardsByUser(Pageable pageable){
         return boardRepository.findAllByUser(securityUtils.getCurrentUser(), pageable)
-                .map(this :: convertToDTO);
+                .map(this::convertToDTO);
     }
 
     private Board getBoardByIdAndCheckOwnership(Long id){
-        Board board = boardRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Board not found with id: " + id));
-        if(!board.getUser().getId().equals(securityUtils.getCurrentUser().getId())){
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Board not found with id: " + id));
+        if(board.getUser().getId().equals(securityUtils.getCurrentUser().getId())){
             throw new AccessDeniedException("You don't have permission to access this board!");
         }
         return board;
@@ -58,7 +57,6 @@ public class BoardService {
         board.setUser(user);
         boardRepository.save(board);
         return convertToDTO(board);
-
     }
 
     public void deleteBoard(Long id){
@@ -72,5 +70,4 @@ public class BoardService {
                 .name(board.getName())
                 .build();
     }
-
 }

@@ -18,37 +18,30 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
     public UserDTO register(RegisterRequest registerRequest){
-        //check trong DB xem co username chua
         if(userRepository.existsByUsername(registerRequest.getUsername())){
             throw new RuntimeException("Username existed! Please user another username");
         }
-        // tao user voi username, password
         User user = new User();
-        user.setRole(User.Role.USER);
         user.setName(registerRequest.getName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setUsername(registerRequest.getUsername());
-        //luu user vao DB
+        user.setRole(User.Role.USER);
         userRepository.save(user);
         return convertToDTO(user);
-
     }
 
     public AuthResponseDTO login(LoginRequest loginRequest){
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-        //Check password
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
         authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("Not found user!"));
-        //Tao token
         String accessToken = jwtService.generateToken(user.getUsername());
-        //Tra ve AuthResponse
         return AuthResponseDTO.builder()
                 .accessToken(accessToken)
                 .username(user.getUsername())
