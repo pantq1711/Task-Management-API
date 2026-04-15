@@ -21,6 +21,7 @@ public class UserService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     public UserDTO register(RegisterRequest registerRequest){
         if(userRepository.existsByUsername(registerRequest.getUsername())){
@@ -45,7 +46,7 @@ public class UserService {
         return AuthResponseDTO.builder()
                 .accessToken(accessToken)
                 .username(user.getUsername())
-                .refreshToken(null)
+                .refreshToken(refreshTokenService.createRefreshToken(user).getToken())
                 .build();
     }
 

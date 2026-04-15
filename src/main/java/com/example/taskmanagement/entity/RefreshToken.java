@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,5 +28,9 @@ public class RefreshToken {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 
-    private LocalDateTime expiredAt;
+    @Column(nullable = false)
+    private Instant expiryDate;
+
+    // Cờ để đánh dấu token này đã bị thu hồi (Logout hoặc nghi ngờ hack) chưa
+    private boolean revoked;
 }
