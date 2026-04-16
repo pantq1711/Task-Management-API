@@ -5,13 +5,6 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class RefreshTokenDTO {
-
-    private Long id;
-
+public class RefreshTokenRequest {
     private String token;
-
-    private Long userId;
-
-    private LocalDateTime expiredAt;
 }
