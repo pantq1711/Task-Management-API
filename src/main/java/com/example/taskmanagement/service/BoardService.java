@@ -33,7 +33,10 @@ public class BoardService {
     private Board getBoardByIdAndCheckOwnership(Long id){
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Board not found with id: " + id));
-        if(!board.getUser().getId().equals(securityUtils.getCurrentUser().getId())){
+        boolean isOwner = board.getUser().getId().equals(securityUtils.getCurrentUser().getId());
+        boolean isAdmin = securityUtils.getCurrentUser().getRole().equals(User.Role.ADMIN);
+
+        if(!isAdmin && !isOwner){
             throw new AccessDeniedException("You don't have permission to access this board!");
         }
         return board;

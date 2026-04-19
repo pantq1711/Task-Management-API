@@ -36,7 +36,11 @@ public class TaskService {
     private Task getTaskByIdAndCheckOwnership(Long id){
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("task not found with id: " + id));
-        if(!task.getUser().getId().equals(securityUtils.getCurrentUser().getId())){
+
+        boolean isOwner = task.getUser().getId().equals(securityUtils.getCurrentUser().getId());
+        boolean isAdmin = securityUtils.getCurrentUser().getRole().equals(User.Role.ADMIN);
+
+        if(!isAdmin && !isOwner){
             throw new AccessDeniedException("You don't have permission to access this task!");
         }
         return task;

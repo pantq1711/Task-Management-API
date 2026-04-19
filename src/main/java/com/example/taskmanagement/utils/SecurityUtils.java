@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SecurityUtils {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public User getCurrentUser(){
         Object principal = SecurityContextHolder
