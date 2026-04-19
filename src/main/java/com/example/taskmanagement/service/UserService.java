@@ -4,8 +4,10 @@ import com.example.taskmanagement.dto.AuthResponseDTO;
 import com.example.taskmanagement.dto.LoginRequest;
 import com.example.taskmanagement.dto.RegisterRequest;
 import com.example.taskmanagement.dto.UserDTO;
+import com.example.taskmanagement.entity.RefreshToken;
 import com.example.taskmanagement.entity.User;
 import com.example.taskmanagement.exception.ResourceNotFoundException;
+import com.example.taskmanagement.repository.RefreshTokenRepository;
 import com.example.taskmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public UserDTO register(RegisterRequest registerRequest){
         if(userRepository.existsByUsername(registerRequest.getUsername())){
@@ -43,10 +46,17 @@ public class UserService {
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("Not found user!"));
         String accessToken = jwtService.generateToken(user.getUsername());
+        long count = refreshTokenRepository.countByUser(user);
+        if (count >= 5) {
+            refreshTokenRepository.findTopByUserOrderByExpiryDateAsc(user)
+                    .ifPresent(refreshTokenRepository::delete);
+        }
+        RefreshToken newToken = refreshTokenService.createRefreshToken(user);
         return AuthResponseDTO.builder()
                 .accessToken(accessToken)
                 .username(user.getUsername())
-                .refreshToken(refreshTokenService.createRefreshToken(user).getToken())
+                .refreshToken(newToken.getToken())
+                .userId(user.getId())
                 .build();
     }
 

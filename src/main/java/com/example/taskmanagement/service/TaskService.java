@@ -50,6 +50,7 @@ public class TaskService {
         return convertToDTO(getTaskByIdAndCheckOwnership(id));
     }
 
+    @Transactional
     public TaskDTO updateTask(Long id, TaskDTO taskDTO){
         Task task = getTaskByIdAndCheckOwnership(id);
         task.setName(taskDTO.getName());
@@ -95,6 +96,7 @@ public class TaskService {
         return convertToDTO(task);
     }
 
+    @Transactional
     public void deleteTask(Long id){
         taskRepository.delete(getTaskByIdAndCheckOwnership(id));
     }
