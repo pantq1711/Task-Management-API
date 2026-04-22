@@ -83,9 +83,9 @@ public class TaskService {
         task.setEndTime(taskDTO.getEndTime());
         task.setStatus(taskDTO.getStatus());
         if (taskDTO.getBoardId() != null) {
+
             Board board = boardRepository.findById(taskDTO.getBoardId())
                     .orElseThrow(() -> new ResourceNotFoundException("Board not found with ID: " + taskDTO.getBoardId()));
-
             // Phân quyền: Đảm bảo User chỉ được thêm Task vào Board của chính họ
             if (!board.getUser().getId().equals(securityUtils.getCurrentUser().getId())) {
                 throw new AccessDeniedException("You don't have permission to access!");
